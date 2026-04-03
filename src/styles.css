@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'courier-prime';
+  src: url('assets/fonts/Courier-Prime-Nerd-Font/CourierPrimeNerdFont-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'courier-prime';
+  src: url('assets/fonts/Courier-Prime-Nerd-Font/CourierPrimeNerdFont-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.xterm-viewport {
+  background-color: transparent !important;
+}
+
+/* .xterm-helpers {
+  display: none;
+} */

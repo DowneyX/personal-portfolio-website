@@ -1,0 +1,62 @@
+<section class="pt-6 sm:pt-10 h-full px-4 sm:px-6 lg:px-8">
+  <div class="max-w-screen-xl h-full mx-auto">
+    <div class="flex flex-col lg:items-start lg:gap-6">
+      <!-- i want divs below to occupy eaqual with like 2 colums -->
+
+      <div class="grid grid-cols-1 gap-10 mt-4 sm:mt-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-2">
+
+        <div class="col-span-1 mt-2 lg:mt-0 lg:pr-4">
+          <pre
+            class="text-white font-bold text-[10px] leading-tight sm:text-xs md:text-sm overflow-x-auto whitespace-pre">
+                  __ _ _      
+ _ __  _ __ ___  / _(_) | ___ 
+| '_ \| '__/ _ \| |_| | |/ _ \
+| |_) | | | (_) |  _| | |  __/
+| .__/|_|  \___/|_| |_|_|\___|
+|_|                           
+</pre>
+          <hr class="my-4 sm:my-5">
+
+          <p class="mt-4 text-neutral-500 leading-relaxed">
+            Hello, I'm Douwe, a software engineer with an interest in embedded development.
+            <br> <br>
+            I studied software engineering,and I enjoy solving problems,
+            contributing to projects in a meaningful way and learning from the way others think and
+            build.
+          </p>
+          <!-- list of education -->
+          <br>
+          <p class=" text-neutral-500">below are my academic qualifications:</p>
+          <ul class="mt-4 border-l px-3 sm:px-4 space-y-6 sm:space-y-8">
+            <li class="flex items-start gap-3">
+              <div>
+                <p class="text-sm text-neutral-500">Noorderpoort (School of Art & Media)</p>
+                <p class="text-sm text-neutral-400">MBO Multimedia design, 2019 </p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div>
+                <p class="text-sm text-neutral-500">Hanze University of Applied Sciences</p>
+                <p class="text-sm text-neutral-400">BA Software Engineering, 2025</p>
+              </div>
+            </li>
+          </ul>
+
+          <!-- something about how i preffer embedded development -->
+          <p class="mt-4 text-neutral-500 leading-relaxed">
+            I have a particular interest in embedded development, where I can apply my software engineering skills to
+            create tangible and reliable systems.
+          </p>
+          <br>
+          <span class="text-neutral-500">You can contact me </span>
+          <span><a routerLink="/contact" class="text-white underline">here</a></span>
+        </div>
+
+        <div class="flex flex-col items-stretch md:items-center">
+          <app-profile-code-snippet></app-profile-code-snippet>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>

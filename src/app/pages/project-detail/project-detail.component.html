@@ -1,0 +1,74 @@
+<section class="pt-6 sm:pt-10 h-full px-4 sm:px-6 lg:px-8">
+  <div class="max-w-screen-xl h-full mx-auto">
+    <div *ngIf="project && !notFound; else missingProject" class="pb-12 sm:pb-16">
+      <header>
+        <pre
+          class="text-white font-bold text-[10px] leading-tight sm:text-xs md:text-sm overflow-x-auto whitespace-pre">{{ asciiTitle || project.asciiTitle || project.title }}</pre>
+        <div class="border-t mt-2 pt-2">
+          <p class=" text-neutral-600">/{{ project.year }} / {{ project.projectType }}</p>
+          <p class="text-neutral-400 mt-4">{{ project.briefDescription }}</p>
+
+        </div>
+      </header>
+
+      <!-- center this  -->
+      <article class="mt-8 sm:mt-12 max-w-3xl text-neutral-300 mx-auto">
+        <ng-container *ngFor="let block of project.content">
+          <ng-container [ngSwitch]="block.type">
+            <h2 *ngSwitchCase="'heading'" [class]="getHeadingClass(block.level)" [innerHTML]="renderMarkdownLinks(block.text)"></h2>
+
+            <p *ngSwitchCase="'paragraph'" class="text-neutral-300 leading-normal mt-3" [innerHTML]="renderMarkdownLinks(block.text)">
+            </p>
+
+            <blockquote *ngSwitchCase="'quote'"
+              class="mt-8 border-l-2 border-neutral-600 pl-4 text-neutral-300 italic " [innerHTML]="renderMarkdownLinks(block.text)">
+            </blockquote>
+
+            <div *ngSwitchCase="'list'" class="mt-2 mb-6">
+              <h3 *ngIf="block.title" class="text-white font-semibold mb-3" [innerHTML]="renderMarkdownLinks(block.title)"></h3>
+              <ul class="list-disc pl-5 space-y-2 text-neutral-300">
+                <li *ngFor="let item of block.items" [innerHTML]="renderMarkdownLinks(item)"></li>
+              </ul>
+            </div>
+
+            <figure *ngSwitchCase="'image'" class="mt-8">
+              <img [src]="block.src" [alt]="block.alt || project.title" class="project-image cursor-pointer"
+                (click)="block.src && openLightbox(block.src)">
+              <figcaption *ngIf="block.caption" class="mt-2 text-sm text-neutral-500">{{ block.caption }}</figcaption>
+            </figure>
+
+            <div *ngSwitchCase="'gallery'" class="mt-8 columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+              <figure *ngFor="let image of block.images">
+                <img [src]="image.src" [alt]="image.alt" class="project-image cursor-pointer"
+                  (click)="openLightbox(image.src)">
+                <figcaption *ngIf="image.caption" class="mt-1 text-xs text-neutral-500">{{ image.caption }}</figcaption>
+              </figure>
+            </div>
+
+            <div *ngSwitchCase="'code'" class="mt-8">
+              <app-code-snippet [fileName]="block.fileName || 'snippet.ts'" [language]="block.language || 'typescript'"
+                [code]="block.code || ''"></app-code-snippet>
+            </div>
+          </ng-container>
+        </ng-container>
+      </article>
+    </div>
+  </div>
+
+  <div *ngIf="selectedImage" class="fixed inset-0 z-50 bg-black/90 p-4 sm:p-8" (click)="closeLightbox()">
+    <div class="w-full h-full overflow-auto flex items-center justify-center">
+      <img [src]="selectedImage" alt="Selected project image" class="lightbox-image max-w-full max-h-full"
+        (click)="$event.stopPropagation()">
+    </div>
+  </div>
+
+  <ng-template #missingProject>
+    <div class="max-w-screen-xl h-full mx-auto py-10">
+      <div class="border-t mt-2 pt-8">
+        <h1 class=" text-white font-bold">Project not found</h1>
+        <p class="text-neutral-400 mt-3">The project you are looking for does not exist.</p>
+        <a routerLink="/project-list" class="inline-block mt-6 text-white underline">Back to projects</a>
+      </div>
+    </div>
+  </ng-template>
+</section>

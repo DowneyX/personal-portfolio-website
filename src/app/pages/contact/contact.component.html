@@ -1,0 +1,81 @@
+<section class="pt-6 sm:pt-10 h-full px-4 sm:px-6 lg:px-8">
+    <div class="max-w-screen-xl h-full mx-auto">
+        <div class="flex flex-col lg:items-start lg:gap-6">
+            <!-- i want divs below to occupy eaqual with like 2 colums -->
+
+            <div class="grid grid-cols-1 gap-10 mt-4 sm:mt-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-2">
+
+                <div class="col-span-1 mt-2 lg:mt-0 lg:pr-4">
+                    <pre
+                        class="text-white font-bold text-[10px] leading-tight sm:text-xs md:text-sm overflow-x-auto whitespace-pre">
+                 _             _
+  ___ ___  _ __ | |_ __ _  ___| |_ 
+ / __/ _ \| '_ \| __/ _` |/ __| __|
+| (_| (_) | | | | || (_| | (__| |_ 
+ \___\___/|_| |_|\__\__,_|\___|\__|                        
+
+</pre>
+                    <hr class="my-4 sm:my-5">
+
+                    <p class="mt-4 text-neutral-500 leading-relaxed">
+                        Want to get in touch? Fill in the form to share your name, email, and message.
+                        I read every message and usually respond as soon as possible.
+                    </p>
+
+                    <p class="mt-4 text-neutral-500 leading-relaxed">
+                        If you prefer, you can also reach out through GitHub or check my recent work there.
+                    </p>
+
+                    <p class="mt-4 text-neutral-500">Links:</p>
+                    <ul class="mt-3 border-l px-3 sm:px-4 space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div>
+                                <a href="https://github.com/DowneyX" target="_blank" rel="noopener noreferrer"
+                                    class="text-sm text-white underline">github.com/DowneyX</a>
+                                <p class="text-sm text-neutral-400">Github</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-col items-stretch md:items-center">
+                    <article class="w-full overflow-hidden bg-neutral-950" aria-label="Code snippet card">
+                        <header class="flex items-center justify-between gap-2 bg-neutral-900 px-3 py-2">
+                            <span class="text-sm text-neutral-400">COMMIT_EDIT_MSG</span>
+
+                        </header>
+
+                        <form class="m-0 overflow-x-auto p-4  text-neutral-100 font-['courier-prime',monospace] space-y-3">
+                            <p><span class="text-blue-400">guest&#64;downey:~$</span> sudo init contact --form</p>
+
+                            <div>
+                                <label for="contact-name" class="block text-blue-400">NAME:</label>
+                                <input id="contact-name" name="contact-name" type="text" placeholder="your name"
+                                    class="mt-1 w-full bg-neutral-950 px-2 py-1 outline-none focus:outline-none focus:ring-0 border-l" />
+                            </div>
+
+                            <div>
+                                <label for="contact-email" class="block text-blue-400">EMAIL:</label>
+                                <input id="contact-email" name="contact-email" type="email" placeholder="your email"
+                                    class="mt-1 w-full bg-neutral-950 px-2 py-1 outline-none focus:outline-none focus:ring-0 border-l" />
+                            </div>
+
+                            <div>
+                                <label for="contact-message" class="block text-blue-400">MESSAGE:</label>
+                                <textarea id="contact-message" name="contact-message" rows="6" placeholder="your message"
+                                    class="mt-1 w-full resize-y bg-neutral-950 px-2 py-1 outline-none focus:outline-none focus:ring-0 border-l"></textarea>
+                            </div>
+
+                            <p class="text-neutral-400">/* Ready to deploy your message. */</p>
+
+                            <button type="button" class="bg-neutral-900 px-3 py-1 text-neutral-100 pt-1.5 w-full hover:bg-neutral-800"> 
+                                [commit & push]
+                            </button>
+                        </form>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

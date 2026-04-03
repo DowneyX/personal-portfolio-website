@@ -1,0 +1,316 @@
+[
+  {
+    "slug": "factorio-pollution-visuals-mod",
+    "title": "Factorio Pollution Visuals Mod",
+    "year": 2019,
+    "briefDescription": "Mod i made for the game Factorio that adds visual indicators to pollution, giving the game more ambiance and making it easier to see where pollution is spreading.",
+    "tags": [
+      "Lua"
+    ],
+    "projectType": "Personal project",
+    "content": [
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Project context"
+      },
+      {
+        "type": "paragraph",
+        "text": "Factorio is a game where the player is stranded on an alien planet and must build a factory to survive. As production increases, machines generate pollution which spreads across map chunks and eventually angers local wildlife."
+      },
+      {
+        "type": "paragraph",
+        "text": "While the game includes a pollution overlay on the map, it’s difficult to understand pollution levels during normal gameplay. Players often need to constantly open the map to see where pollution is spreading."
+      },
+      {
+        "type": "image",
+        "src": "/images/projects/factorio-pollution-visuals-mod/vanilla_example.png",
+        "alt": "Project visual for Factorio Pollution Visuals Mod.",
+        "caption": "example of how a player can spot pollution"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "The idea"
+      },
+      {
+        "type": "paragraph",
+        "text": "I thought it would be interesting to make pollution visible directly in the world by adding a seamless smog cloud to polluted areas."
+      },
+      {
+        "type": "paragraph",
+        "text": "The concept was simple:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Heavier pollution → thicker smog",
+          "Light pollution → subtle haze",
+          "No pollution → clear air"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "This approach gives players immediate visual feedback about the environmental impact of their factory without needing to constantly check the map. It also adds a layer of atmosphere :)"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Implementation"
+      },
+      {
+        "type": "paragraph",
+        "text": "Luckily, the developers of Factorio provide excellent modding support through their API, making it straightforward to experiment with gameplay and visual changes."
+      },
+      {
+        "type": "paragraph",
+        "text": "Factorio stores pollution per chunk, so the mod operates entirely on chunk data. Each chunk is tracked, sampled, and rendered independently. This allows the smog to match the pollution simulation exactly."
+      },
+      {
+        "type": "paragraph",
+        "text": "The implementation consists of three core parts:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "chunk sampling",
+          "sprite calculation",
+          "layered rendering loop/fading"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "The sprite system"
+      },
+      {
+        "type": "paragraph",
+        "text": "One of the biggest challenges was avoiding visible seams between chunks. A single sprite per chunk creates hard edges, so the mod uses multiple modular sprites that tile together:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "center sprites",
+          "edge sprites (top, bottom, left, right)",
+          "corner sprites",
+          "inverted corner sprites"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Each piece is rendered depending on neighbouring pollution values so the smog blends smoothly across chunk boundaries. This means every transition between polluted and non-polluted chunks can be handled visually."
+      },
+      {
+        "type": "image",
+        "src": "/images/projects/factorio-pollution-visuals-mod/all_sprites.png",
+        "alt": "Project visual for Factorio Pollution Visuals Mod.",
+        "caption": "all the sprites needed for the project"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Every tick"
+      },
+      {
+        "type": "paragraph",
+        "text": "every tick the script checks a couple of things depending on the state:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "check if the current mod version has initialised and is setup",
+          "check the current polluted chunks",
+          "check all chunks",
+          "fade in/out marked chunks"
+        ]
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "local function on_tick()\n    ensure_state()\n\n    if storage.is_setup == false then\n        setup()\n    elseif (not storage.is_checking) and (not storage.is_fading) then\n        check_polluted_chunks()\n    elseif storage.is_checking then\n        check_all_chunks()\n    elseif storage.is_fading then\n        fade()\n    end"
+      },
+      {
+        "type": "paragraph",
+        "text": "In this article we will only discuss the ``check_polluted_chunks`` cylce. Feel free to check out my github page for the full source code if we want an indept look."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "check polluted chunks"
+      },
+      {
+        "type": "paragraph",
+        "text": "The mod runs an internal loop that processes polluted chunks incrementally:"
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "local function check_polluted_chunks()\n    local chunks_per_tick = get_setting(\"chunks-per-tick-pollution-visuals\")\n\n    for _ = 1, chunks_per_tick do\n        local index, chunk_data = next(storage.polluted_chunks, storage.polluted_chunks_i)\n        if index == nil then\n            storage.polluted_chunks_i = nil\n            storage.is_fading = true\n            break\n        end\n\n        storage.polluted_chunks_i = index\n        check_polluted_chunk(chunk_data)\n    end\nend"
+      },
+      {
+        "type": "paragraph",
+        "text": "This spreads the workload across ticks to avoid performance spikes."
+      },
+      {
+        "type": "paragraph",
+        "text": "Players can change how many chunks they would like to be checked per tick so a more performant experience."
+      },
+      {
+        "type": "paragraph",
+        "text": "In the ``check_poluted_chunk`` function, checks a chunk and does the following:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Samples pollution for the chunk",
+          "Computes density thresholds for each layer",
+          "Fetch the correct sprites",
+          "Compares them with currently rendered sprites",
+          "flags sprites for fade in or out when needed"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "below is the whole function."
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "local function check_polluted_chunk(chunk_data)\n    local surface = game.surfaces[chunk_data.surface]\n    if not surface then return end\n\n    local x = chunk_data.position.x\n    local y = chunk_data.position.y\n    local chunk_pollution = sample_pollution(surface, x, y)\n    local max_layers = get_setting(\"layers-pollution-visuals\")\n    local offset = get_setting(\"x-offset-pollution-visuals\")\n    local a = get_setting(\"y-intercept-pollution-visuals\")\n    local b = get_setting(\"base-pollution-visuals\")\n    local players = get_players_to_render_for()\n    local r_id = chunk_data.r_id\n\n    for i = 1, max_layers do\n        local level = a * (b ^ i) + offset\n        local next_sprites = compute_sprites(surface, x, y, level, chunk_pollution)\n\n        local current_ids = normalize_layer_ids(r_id[i])\n        local current_sprites = {}\n        local valid_ids = {}\n\n        for _, id in pairs(current_ids) do\n            local current_object = get_render_object(id)\n            if current_object ~= nil then\n                valid_ids[#valid_ids + 1] = id\n                current_sprites[#current_sprites + 1] = current_object.animation\n            end\n        end\n\n        if #valid_ids > 0 then\n            r_id[i] = valid_ids\n        else\n            r_id[i] = nil\n        end\n\n        if #valid_ids > 0 then\n            if next_sprites == nil then\n                for _, id in pairs(valid_ids) do\n                    fade_out_entry(id, x, y)\n                end\n                r_id[i] = nil\n            elseif not string_lists_equal(next_sprites, current_sprites) then\n                for _, id in pairs(valid_ids) do\n                    fade_out_entry(id, x, y)\n                end\n\n                local new_ids = {}\n                for _, sprite_name in pairs(next_sprites) do\n                    local new_id = create_sprite(surface, sprite_name, x, y, players)\n                    new_ids[#new_ids + 1] = new_id\n                    fade_in_entry(new_id, x, y)\n                end\n\n                r_id[i] = new_ids\n            end\n        elseif next_sprites ~= nil then\n            local new_ids = {}\n            for _, sprite_name in pairs(next_sprites) do\n                local new_id = create_sprite(surface, sprite_name, x, y, players)\n                new_ids[#new_ids + 1] = new_id\n                fade_in_entry(new_id, x, y)\n            end\n            r_id[i] = new_ids\n        end\n    end\n\n    if chunk_pollution <= 0 and not has_neighbor_pollution(surface, x, y) and next(r_id) == nil then\n        storage.polluted_chunks[key_for(chunk_data.surface, x, y)] = nil\n    end\nend"
+      },
+      {
+        "type": "paragraph",
+        "text": "The function begins by gathering all required values:"
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "local chunk_pollution = sample_pollution(surface, x, y)\nlocal max_layers = get_setting(\"layers-pollution-visuals\")\nlocal offset = get_setting(\"x-offset-pollution-visuals\")\nlocal a = get_setting(\"y-intercept-pollution-visuals\")\nlocal b = get_setting(\"base-pollution-visuals\")"
+      },
+      {
+        "type": "paragraph",
+        "text": "These settings define how many smog layers exist and how pollution maps to visual density."
+      },
+      {
+        "type": "paragraph",
+        "text": "Each chunk can render multiple stacked smog layers. The function iterates over them:"
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "for i = 1, max_layers do\n    local level = a * (b ^ i) + offset\n    local next_sprites = compute_sprites(surface, x, y, level, chunk_pollution)"
+      },
+      {
+        "type": "paragraph",
+        "text": "The exponential formula determines the pollution threshold for each layer."
+      },
+      {
+        "type": "paragraph",
+        "text": "Higher layers require more pollution and therefore appear only in dense areas."
+      },
+      {
+        "type": "paragraph",
+        "text": "Instead of recreating sprites every update, the function compares what should exist with what already exists:"
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "elseif not string_lists_equal(next_sprites, current_sprites) then\n    for _, id in pairs(valid_ids) do\n        fade_out_entry(id, x, y)\n    end"
+      },
+      {
+        "type": "paragraph",
+        "text": "If the sprite set changes:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "existing sprites are marked to be faded out",
+          "new sprites are created",
+          "new sprites are marked to be faded in"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "This prevents flickering and reduces unnecessary rendering operations."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Sprite Calculation"
+      },
+      {
+        "type": "paragraph",
+        "text": "The core logic for choosing sprites checks all neighbouring chunks and diagonals:"
+      },
+      {
+        "type": "code",
+        "language": "lua",
+        "fileName": "control.lua",
+        "code": "local n = sample_pollution(surface, x, y - 1) > level\nlocal e = sample_pollution(surface, x + 1, y) > level\nlocal s = sample_pollution(surface, x, y + 1) > level\nlocal w = sample_pollution(surface, x - 1, y) > level\nlocal ne = sample_pollution(surface, x + 1, y - 1) > level\nlocal se = sample_pollution(surface, x + 1, y + 1) > level\nlocal sw = sample_pollution(surface, x - 1, y + 1) > level\nlocal nw = sample_pollution(surface, x - 1, y - 1) > level"
+      },
+      {
+        "type": "paragraph",
+        "text": "Based on these values, the mod decides whether the chunk should render:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "a full middle tile",
+          "an edge",
+          "a convex corner",
+          "a concave corner",
+          "nothing"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Closing thoughts"
+      },
+      {
+        "type": "paragraph",
+        "text": "The goal was to make pollution something players can feel moment-to-moment instead of something only visible on the map. And i feel that i have achieved this goal very well."
+      },
+      {
+        "type": "gallery",
+        "images": [
+          {
+            "src": "https://assets-mod.factorio.com/assets/6628c5a5e7e05b62ec610d4eb51bb74e6ec030c2.png",
+            "alt": "image",
+            "caption": " "
+          },
+          {
+            "src": "https://assets-mod.factorio.com/assets/e9ebdd31dff6baf831cb1ee01d523859c4c4ad1c.png",
+            "alt": "image",
+            "caption": " "
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "There are still some bugs pressent, when two sources of pollution meet in the middle, the conditions to pick a fitting spite are missing which causes noticible seams in the future i will probably fix this but for now this is a minor issue. especially since this doesn't happen often."
+      },
+      {
+        "type": "paragraph",
+        "text": "If you're interested in trying it yourself or looking at the source code, you can find the project here:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Mod Portal: [Pollution Visuals](https://mods.factorio.com/mod/pollution-visuals)",
+          "GitHub Repository: [DowneyX/pollution-visuals](https://github.com/DowneyX/pollution-visuals)"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Feedback, suggestions, and contributions are always welcome."
+      }
+    ]
+  }
+]

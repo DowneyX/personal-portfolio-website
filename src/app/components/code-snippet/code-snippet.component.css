@@ -1,0 +1,10 @@
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+}
+
+button:active {
+  transform: scale(0.98);
+}

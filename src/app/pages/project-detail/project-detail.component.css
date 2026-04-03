@@ -1,0 +1,47 @@
+/* Column-based gallery styling: images are inline-block so they flow into CSS columns
+	 This keeps each column stacking images top-to-bottom (no row alignment). */
+.project-image {
+	display: inline-block; /* required for CSS columns */
+	width: 100%;
+	height: auto; /* preserve natural aspect ratio */
+	object-fit: contain;
+	border-radius: 0.5rem;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	transition: transform 160ms ease, box-shadow 160ms ease;
+	max-height: 60vh; /* avoid extremely tall images from dominating */
+	break-inside: avoid; /* avoid breaking an image between columns */
+    margin-bottom: 1rem;
+}
+
+.project-image:hover {
+	transform: translateY(-4px) scale(1.01);
+	box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* Lightbox image zoom */
+.lightbox-image {
+	transition: transform 240ms ease;
+	cursor: zoom-in;
+	display: block;
+	margin: 0 auto;
+}
+
+.lightbox-image.zoomed {
+	transform: scale(1.6);
+	cursor: zoom-out;
+}
+
+/* When zoomed, allow inner container to scroll so user can pan the image */
+.overflow-auto {
+	overflow: auto;
+}
+
+/* Small helper for very narrow viewports: ensure images keep spacing */
+@media (max-width: 639px) {
+	.project-image { margin-bottom: 1rem; }
+}
+
+/* Small helper for very narrow viewports: ensure images keep spacing */
+@media (max-width: 639px) {
+	.project-image { margin-bottom: 1rem; }
+}
