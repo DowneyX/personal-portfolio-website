@@ -113,12 +113,12 @@
       },
       {
         "type": "paragraph",
-        "text": "every tick the script checks a couple of things depending on the state:"
+        "text": "Every tick the script checks a couple of things depending on the state:"
       },
       {
         "type": "list",
         "items": [
-          "check if the current mod version has initialised and is setup",
+          "check if the current mod version has initialised and is set up",
           "check the current polluted chunks",
           "check all chunks",
           "fade in/out marked chunks"
@@ -132,12 +132,12 @@
       },
       {
         "type": "paragraph",
-        "text": "In this article we will only discuss the ``check_polluted_chunks`` cylce. Feel free to check out my github page for the full source code if we want an indept look."
+        "text": "In this article we will only discuss the ``check_polluted_chunks`` cycle. Feel free to check out my GitHub page for the full source code if we want an in-depth look."
       },
       {
         "type": "heading",
         "level": 3,
-        "text": "check polluted chunks"
+        "text": "Check polluted chunks"
       },
       {
         "type": "paragraph",
@@ -159,21 +159,21 @@
       },
       {
         "type": "paragraph",
-        "text": "In the ``check_poluted_chunk`` function, checks a chunk and does the following:"
+        "text": "In the ``check_polluted_chunk`` function, the code checks a chunk and does the following:"
       },
       {
         "type": "list",
         "items": [
           "Samples pollution for the chunk",
           "Computes density thresholds for each layer",
-          "Fetch the correct sprites",
+          "Fetches the correct sprites",
           "Compares them with currently rendered sprites",
-          "flags sprites for fade in or out when needed"
+          "Flags sprites for fade in or out when needed"
         ]
       },
       {
         "type": "paragraph",
-        "text": "below is the whole function."
+        "text": "Below is the whole function."
       },
       {
         "type": "code",
@@ -275,7 +275,7 @@
       },
       {
         "type": "paragraph",
-        "text": "The goal was to make pollution something players can feel moment-to-moment instead of something only visible on the map. And i feel that i have achieved this goal very well."
+        "text": "The goal was to make pollution something players can feel moment-to-moment instead of something only visible on the map. I feel that I have achieved this goal very well."
       },
       {
         "type": "gallery",
@@ -294,7 +294,7 @@
       },
       {
         "type": "paragraph",
-        "text": "There are still some bugs pressent, when two sources of pollution meet in the middle, the conditions to pick a fitting spite are missing which causes noticible seams in the future i will probably fix this but for now this is a minor issue. especially since this doesn't happen often."
+        "text": "There are still some bugs present. When two sources of pollution meet in the middle, the conditions to pick a fitting sprite are missing, which causes noticeable seams. In the future I will probably fix this, but for now this is a minor issue, especially since this does not happen often."
       },
       {
         "type": "paragraph",

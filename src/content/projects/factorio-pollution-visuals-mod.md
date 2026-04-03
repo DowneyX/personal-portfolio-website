@@ -45,9 +45,9 @@ Each piece is rendered depending on neighbouring pollution values so the smog bl
 
 ### Every tick
 
-every tick the script checks a couple of things depending on the state:
+Every tick the script checks a couple of things depending on the state:
 
-- check if the current mod version has initialised and is setup
+- check if the current mod version has initialised and is set up
 - check the current polluted chunks
 - check all chunks
 - fade in/out marked chunks
@@ -67,9 +67,9 @@ local function on_tick()
     end
 ```
 
-In this article we will only discuss the ``check_polluted_chunks`` cylce. Feel free to check out my github page for the full source code if we want an indept look.
+In this article we will only discuss the ``check_polluted_chunks`` cycle. Feel free to check out my GitHub page for the full source code if we want an in-depth look.
 
-### check polluted chunks
+### Check polluted chunks
 
 The mod runs an internal loop that processes polluted chunks incrementally:
 
@@ -95,15 +95,15 @@ This spreads the workload across ticks to avoid performance spikes.
 
 Players can change how many chunks they would like to be checked per tick so a more performant experience.
 
-In the ``check_poluted_chunk`` function, checks a chunk and does the following:
+In the ``check_polluted_chunk`` function, the code checks a chunk and does the following:
 
 - Samples pollution for the chunk
 - Computes density thresholds for each layer
-- Fetch the correct sprites
+- Fetches the correct sprites
 - Compares them with currently rendered sprites
-- flags sprites for fade in or out when needed
+- Flags sprites for fade in or out when needed
 
-below is the whole function.
+Below is the whole function.
 
 ```lua control.lua
 
@@ -247,14 +247,14 @@ Based on these values, the mod decides whether the chunk should render:
 
 ## Closing thoughts
 
-The goal was to make pollution something players can feel moment-to-moment instead of something only visible on the map. And i feel that i have achieved this goal very well.
+The goal was to make pollution something players can feel moment-to-moment instead of something only visible on the map. I feel that I have achieved this goal very well.
 
 <!-- gallery -->
 ![image](https://assets-mod.factorio.com/assets/6628c5a5e7e05b62ec610d4eb51bb74e6ec030c2.png " ")
 ![image](https://assets-mod.factorio.com/assets/e9ebdd31dff6baf831cb1ee01d523859c4c4ad1c.png " ")
 <!-- /gallery -->
 
-There are still some bugs pressent, when two sources of pollution meet in the middle, the conditions to pick a fitting spite are missing which causes noticible seams in the future i will probably fix this but for now this is a minor issue. especially since this doesn't happen often.
+There are still some bugs present. When two sources of pollution meet in the middle, the conditions to pick a fitting sprite are missing, which causes noticeable seams. In the future I will probably fix this, but for now this is a minor issue, especially since this does not happen often.
 
 If you're interested in trying it yourself or looking at the source code, you can find the project here:
 
