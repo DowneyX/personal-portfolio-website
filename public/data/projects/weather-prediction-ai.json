@@ -1,0 +1,247 @@
+{
+  "slug": "weather-prediction-ai",
+  "projectType": "Personal project",
+  "year": 2026,
+  "title": "Weather Prediction Ai",
+  "briefDescription": "Ai model to predict the weather based on historical data, using machine learning techniques to analyze patterns and make forecasts.",
+  "tags": [
+    "Python",
+    "Flask",
+    "scikit-learn",
+    "esp32",
+    "raspberry pi"
+  ],
+  "content": [
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Project context"
+    },
+    {
+      "type": "paragraph",
+      "text": "During my minor IoT I made a device that gathers weather data such at pressure, hummidity, and temperature. this data would then get send to my raspberry pie via MQTT for storage and data visualisation. seeing this data is cool but it would be much cooler if we can use this data to predict the weather."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Project Overview"
+    },
+    {
+      "type": "paragraph",
+      "text": "The goal of this project was simple:"
+    },
+    {
+      "type": "paragraph",
+      "text": "**predict whether it will rain in the next 5 hours based on current weather conditions.**"
+    },
+    {
+      "type": "paragraph",
+      "text": "To achieve this, I built a system consisting of:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Data ingestion (historical + live sensor data)",
+        "Data preprocessing and feature engineering",
+        "Machine learning model training",
+        "Backend API for predictions",
+        "Frontend visualization"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "You can find the full codebase here:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Input stream: https://github.com/DowneyX/IoT-weather-data-input-stream",
+        "Output stream: https://github.com/DowneyX/IoT-weather-data-output-stream",
+        "Backend: https://github.com/DowneyX/IoT-weather-data-backend",
+        "Frontend: https://github.com/DowneyX/IoT-weather-data-frontend"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Working with Real Weather Data"
+    },
+    {
+      "type": "paragraph",
+      "text": "I started with historical weather data from the KNMI (Royal Netherlands Meteorological Institute). The dataset included hourly measurements such as temperature, humidity, and air pressure."
+    },
+    {
+      "type": "paragraph",
+      "text": "Before using the data, I had to clean and transform it:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Converted the raw `.txt` file into a `.csv`",
+        "Removed unnecessary whitespace and invalid rows",
+        "Standardized datetime formatting",
+        "Adjusted feature values to match my sensor output",
+        "Shifted rainfall data **5 hours into the future** to create a prediction target"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "This last step was key — instead of predicting current rain, the model learns to predict *future* rain."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Balancing the Dataset"
+    },
+    {
+      "type": "paragraph",
+      "text": "One issue I encountered was class imbalance:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "~12,500 records without rain",
+        "~6,400 records with rain"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "To avoid bias in the model, I balanced the dataset by randomly removing \"no rain\" samples until both classes were equal. This significantly improved the reliability of the model during training."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exploring the Data"
+    },
+    {
+      "type": "paragraph",
+      "text": "Before jumping into modeling, I visualized the dataset in 3D using:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Temperature",
+        "Humidity",
+        "Pressure"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "This helped reveal some clear patterns:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "**Low pressure** strongly correlates with rainfall",
+        "**High humidity** increases the chance of rain",
+        "Rain is more likely at **lower temperatures (5–15°C)**"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "However, there were still many ambiguous cases — which made this a good machine learning problem."
+    },
+    {
+      "type": "image",
+      "src": "images/projects/weather-prediction-ai/image.png",
+      "alt": "image.",
+      "caption": "visualisation of weather data"
+    },
+    {
+      "type": "list",
+      "items": [
+        "**red:** no rainfall",
+        "**blue:** rain fall"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Choosing a Machine Learning Model"
+    },
+    {
+      "type": "paragraph",
+      "text": "I tested three different models:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Logistic Regression",
+        "Gaussian Naive Bayes",
+        "Random Forest Classifier"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The **Random Forest Classifier** performed best in terms of accuracy, so I selected it as my final model."
+    },
+    {
+      "type": "paragraph",
+      "text": "After tuning hyperparameters, I improved the model’s accuracy by about **1.8%** compared to the default configuration."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Training and Deployment"
+    },
+    {
+      "type": "paragraph",
+      "text": "Once trained, I exported the model and built a small Python service that:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Loads the trained model",
+        "Accepts sensor input",
+        "Returns a rain prediction"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "I then integrated this into my backend, which pulls the latest sensor data from a database and feeds it into the model."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Final Result"
+    },
+    {
+      "type": "paragraph",
+      "text": "The system now works as follows:"
+    },
+    {
+      "type": "paragraph",
+      "text": "1. Sensors send live weather data"
+    },
+    {
+      "type": "paragraph",
+      "text": "2. Backend processes the latest values"
+    },
+    {
+      "type": "paragraph",
+      "text": "3. The trained model predicts rainfall"
+    },
+    {
+      "type": "paragraph",
+      "text": "4. Frontend displays the result"
+    },
+    {
+      "type": "paragraph",
+      "text": "Everything is connected through an API, making the system modular and easy to extend."
+    },
+    {
+      "type": "image",
+      "src": "images/projects/weather-prediction-ai/home.png",
+      "alt": "image",
+      "caption": "frontend of data predictor"
+    },
+    {
+      "type": "paragraph",
+      "text": "unfortunatly the 3 parameters used are just not very good predictors of rainfall. in extreme cases like high humidity its fairly confident but in other cases its not very accurate."
+    },
+    {
+      "type": "paragraph",
+      "text": "in the future adding more parameters like cload covarage and seasons might proof effective."
+    }
+  ]
+}

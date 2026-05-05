@@ -44,5 +44,30 @@
       "RFID",
       "esp32"
     ]
+  },
+  {
+    "slug": "hupak-dashboard",
+    "projectType": "Academic project",
+    "year": 2024,
+    "title": "Hupak Dashboard",
+    "briefDescription": "Centralized full‑stack production dashboard that replaces fragmented Excel workflows with real‑time visibility into sales orders and per‑line production",
+    "tags": [
+      "Angular",
+      "Spring Boot"
+    ]
+  },
+  {
+    "slug": "weather-prediction-ai",
+    "projectType": "Personal project",
+    "year": 2026,
+    "title": "Weather Prediction Ai",
+    "briefDescription": "Ai model to predict the weather based on historical data, using machine learning techniques to analyze patterns and make forecasts.",
+    "tags": [
+      "Python",
+      "Flask",
+      "scikit-learn",
+      "esp32",
+      "raspberry pi"
+    ]
   }
 ]

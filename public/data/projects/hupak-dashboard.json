@@ -1,0 +1,242 @@
+{
+  "slug": "hupak-dashboard",
+  "projectType": "Academic project",
+  "year": 2024,
+  "title": "Hupak Dashboard",
+  "briefDescription": "Centralized full‑stack production dashboard that replaces fragmented Excel workflows with real‑time visibility into sales orders and per‑line production",
+  "tags": [
+    "Angular",
+    "Spring Boot"
+  ],
+  "content": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problem Context"
+    },
+    {
+      "type": "paragraph",
+      "text": "During my internship, I built a full-stack web application to replace a fragmented production tracking process. The company relied heavily on Excel sheets and manual input, which introduced delays, inconsistencies, and a lack of real-time visibility."
+    },
+    {
+      "type": "paragraph",
+      "text": "The goal of this project was to design and implement a centralized system that provides live insight into production progress and key performance indicators (KPIs), while reducing manual data handling."
+    },
+    {
+      "type": "paragraph",
+      "text": "The existing workflow had a few structural issues:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sales orders were stored in one system, while production data was tracked separately",
+        "Production updates were written down during the day and only processed afterward",
+        "There was no real-time visibility into progress or performance"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "This meant that management could only react *after* issues had already occurred."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "System Architecture"
+    },
+    {
+      "type": "paragraph",
+      "text": "The application is built as a classic full-stack web application with a clear separation between front-end, back-end, and data storage:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "**Frontend:** Angular",
+        "**Backend:** Spring Boot (REST API)",
+        "**Database:** PostgreSQL",
+        "**Data Visualization:** ngx-charts"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The frontend communicates with the backend via REST endpoints, while the backend handles business logic, data processing, and integration with external systems."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Core Features"
+    },
+    {
+      "type": "paragraph",
+      "text": "The application focuses on providing real-time insight into production and simplifying data input:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Centralized overview of sales orders",
+        "Real-time tracking of production progress",
+        "Input system for production mutations (per production line)",
+        "KPI visualization (e.g. worked hours, expected output, efficiency)"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The system is designed with multiple user roles in mind, ensuring that each type of user sees relevant information."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Dashboard Overview (Add Screenshot)"
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/hupak-dashboard/order.png",
+      "alt": "hupak order",
+      "caption": "wireframe of oder screen"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Data Model & Backend Design"
+    },
+    {
+      "type": "paragraph",
+      "text": "The backend is structured around a relational data model that connects:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sales orders",
+        "Production lines",
+        "Mutations (production updates)",
+        "Users"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Spring Boot is used to expose REST endpoints for CRUD operations and data retrieval. The API aggregates and processes raw data into meaningful metrics, such as:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Total produced vs. planned output",
+        "Worked hours per order",
+        "Remaining time based on target rates"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Database management is handled with PostgreSQL, providing a reliable and scalable foundation for structured data."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Frontend Implementation"
+    },
+    {
+      "type": "paragraph",
+      "text": "The frontend is built using Angular with a component-based architecture. Key aspects include:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Reusable UI components for tables, forms, and charts",
+        "Service layer for API communication",
+        "State handling within components for real-time updates"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "For visualization, **ngx-charts** is used to display dynamic graphs that reflect production performance. These charts update based on incoming data, giving users immediate feedback."
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/hupak-dashboard/line-overview.png",
+      "alt": "hupak order",
+      "caption": "wireframe of line view"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Development Approach"
+    },
+    {
+      "type": "paragraph",
+      "text": "The project was developed using an Agile workflow with short iterations. Each sprint included:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Planning and prioritization",
+        "Implementation",
+        "Demo and feedback"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Task management was handled using a Kanban board, which helped keep progress transparent and manageable."
+    },
+    {
+      "type": "paragraph",
+      "text": "One of the main challenges during development was integrating external systems (such as accounting software). This required adapting the backend structure and handling incomplete or unclear API documentation."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Challenges & Trade-offs"
+    },
+    {
+      "type": "paragraph",
+      "text": "Like most real-world projects, not everything could be fully completed within the timeframe. Some limitations include:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Limited validation on user input",
+        "Certain features not yet editable (e.g. production configurations)"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "These trade-offs were made to prioritize delivering a working core system within the available time."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "What I Learned"
+    },
+    {
+      "type": "paragraph",
+      "text": "This project gave me hands-on experience with:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Designing and building a full-stack application",
+        "Structuring a backend with Spring Boot",
+        "Working with relational databases in PostgreSQL",
+        "Building dynamic dashboards with Angular",
+        "Translating business requirements into technical solutions"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "It also reinforced the importance of adaptability—requirements changed, technical constraints appeared, and priorities shifted throughout the project."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Future Improvements"
+    },
+    {
+      "type": "paragraph",
+      "text": "If I were to continue this project, the next steps would include:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Improving validation and error handling",
+        "Optimizing performance (e.g. pagination, query optimization)"
+      ]
+    }
+  ]
+}
