@@ -7,6 +7,7 @@ import { AsciiService } from '../../services/ascii.service';
 import { Project } from '../../models/project.model';
 import { CodeSnippetComponent } from '../../components/code-snippet/code-snippet.component';
 import { Subscription, switchMap } from 'rxjs';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-project-detail',
@@ -25,6 +26,8 @@ export class ProjectDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private asciiService: AsciiService
+    ,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +106,14 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     return 'text-white font-bold mt-12';
+  }
+
+  getSafeUrl(id?: string): SafeResourceUrl | null {
+    if (!id) {
+      return null;
+    }
+    const url = `https://www.youtube-nocookie.com/embed/${id}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   @HostListener('window:keydown', ['$event'])

@@ -1,30 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Project } from '../models/project.model';
-import { catchError, map, Observable, of, shareReplay } from 'rxjs';
+import { catchError, map, Observable, of, shareReplay, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
+  private readonly projectsIndexUrl = '/data/projects/index.json';
+  private readonly projectsLegacyUrl = '/data/projects.json';
   private readonly projects$: Observable<Project[]>;
-  private readonly fallbackProjects: Project[] = [
-    {
-      slug: 'factorio-pollution-visuals-mod',
-      title: 'Factorio Pollution Visuals Mod',
-      year: 2019,
-      briefDescription:
-        'Mod i made for the game Factorio that adds visual indicators to pollution, giving the game more ambiance and making it easier to see where pollution is spreading.',
-      tags: ['Lua'],
-      projectType: 'Personal project',
-    },
-  ];
+  private readonly projectDetailsCache = new Map<string, Observable<Project | undefined>>();
 
   constructor(private readonly http: HttpClient) {
     this.projects$ = this.http
-      .get<Project[]>('data/projects.json')
+      .get<Project[]>(this.projectsIndexUrl)
       .pipe(
         catchError((error) => {
-          console.error('Failed to load data/projects.json, using fallback projects.', error);
-          return of(this.fallbackProjects);
+          console.error('Failed to load /data/projects/index.json, trying legacy /data/projects.json.', error);
+          return this.http.get<Project[]>(this.projectsLegacyUrl).pipe(
+            catchError((legacyError) => {
+              console.error('Failed to load /data/projects.json, returning empty projects list.', legacyError);
+              return of([]);
+            })
+          );
         })
       )
       .pipe(shareReplay(1));
@@ -47,7 +44,44 @@ export class ProjectService {
   }
 
   getBySlug(slug: string): Observable<Project | undefined> {
-    return this.projects$.pipe(map((projects) => projects.find((p) => p.slug === slug)));
+    if (!slug) {
+      return of(undefined);
+    }
+
+    return this.projects$.pipe(
+      map((projects) => projects.find((p) => p.slug === slug)),
+      switchMap((projectFromIndex) => {
+        if (!projectFromIndex) {
+          return of(undefined);
+        }
+
+        return this.getProjectDetailsBySlug(slug).pipe(
+          map((projectDetails) => projectDetails ?? projectFromIndex)
+        );
+      })
+    );
+  }
+
+  private getProjectDetailsBySlug(slug: string): Observable<Project | undefined> {
+    const cached = this.projectDetailsCache.get(slug);
+    if (cached) {
+      return cached;
+    }
+
+    const request = this.http
+      .get<Project>(`/data/projects/${slug}.json`)
+      .pipe(
+        catchError(() =>
+          this.http
+            .get<Project[]>(this.projectsLegacyUrl)
+            .pipe(map((projects) => projects.find((project) => project.slug === slug)))
+            .pipe(catchError(() => of(undefined)))
+        )
+      )
+      .pipe(shareReplay(1));
+
+    this.projectDetailsCache.set(slug, request);
+    return request;
   }
 
   getAllTags(): Observable<string[]> {

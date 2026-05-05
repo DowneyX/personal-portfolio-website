@@ -14,7 +14,103 @@ const path = require('path');
  */
 
 const mdDir = path.join(__dirname, '../src/content/projects');
-const jsonPath = path.join(__dirname, '../public/data/projects.json');
+const dataDir = path.join(__dirname, '../public/data/projects');
+const indexPath = path.join(dataDir, 'index.json');
+const legacyJsonPath = path.join(__dirname, '../public/data/projects.json');
+
+function slugToTitle(slug) {
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function getMarkdownSlugs() {
+  if (!fs.existsSync(mdDir)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(mdDir)
+    .filter((file) => file.endsWith('.md'))
+    .map((file) => path.basename(file, '.md'));
+}
+
+function buildProjectStub(slug) {
+  return {
+    slug,
+    title: slugToTitle(slug),
+    year: new Date().getFullYear(),
+    briefDescription: '',
+    tags: [],
+    projectType: 'Personal project'
+  };
+}
+
+function loadProjectsData() {
+  const markdownSlugs = getMarkdownSlugs();
+  const sourcePath = fs.existsSync(indexPath) ? indexPath : legacyJsonPath;
+
+  if (!fs.existsSync(sourcePath)) {
+    const generatedProjects = markdownSlugs.map(buildProjectStub);
+    fs.mkdirSync(dataDir, { recursive: true });
+    fs.writeFileSync(indexPath, JSON.stringify(generatedProjects, null, 2));
+    console.log(`✓ Created missing project index with ${generatedProjects.length} project(s)`);
+    return generatedProjects;
+  }
+
+  let projectsData;
+  try {
+    projectsData = JSON.parse(fs.readFileSync(sourcePath, 'utf-8'));
+  } catch (error) {
+    console.warn(`⚠ Invalid project source data. Recreating from markdown files. (${error.message})`);
+    projectsData = markdownSlugs.map(buildProjectStub);
+  }
+
+  if (!Array.isArray(projectsData)) {
+    console.warn('⚠ Project source data is not an array. Recreating from markdown files.');
+    projectsData = markdownSlugs.map(buildProjectStub);
+  }
+
+  const knownSlugs = new Set(projectsData.map((project) => project.slug));
+  markdownSlugs.forEach((slug) => {
+    if (!knownSlugs.has(slug)) {
+      projectsData.push(buildProjectStub(slug));
+      console.log(`+ Added missing project entry: ${slug}`);
+    }
+  });
+
+  return projectsData;
+}
+
+function toProjectIndexItem(project) {
+  const {
+    slug,
+    asciiTitle,
+    projectType,
+    year,
+    title,
+    briefDescription,
+    tags,
+    readTime,
+    role,
+    stack
+  } = project;
+
+  return {
+    slug,
+    ...(asciiTitle !== undefined && { asciiTitle }),
+    ...(projectType !== undefined && { projectType }),
+    ...(year !== undefined && { year }),
+    title,
+    ...(briefDescription !== undefined && { briefDescription }),
+    ...(tags !== undefined && { tags }),
+    ...(readTime !== undefined && { readTime }),
+    ...(role !== undefined && { role }),
+    ...(stack !== undefined && { stack })
+  };
+}
 
 // Parse markdown content into content blocks
 function parseMarkdown(markdown) {
@@ -117,6 +213,31 @@ function parseMarkdown(markdown) {
       continue;
     }
 
+    // YouTube embed marker: <!-- youtube ID_or_URL -->
+    const youtubeMatch = line.match(/<!--\s*youtube(?:\s*[:\s])\s*(https?:\/\/[^\s]+|[A-Za-z0-9_-]{6,})\s*-->/i);
+    if (youtubeMatch) {
+      const value = youtubeMatch[1];
+      let id = value;
+
+      // extract id from full YouTube URLs
+      try {
+        if (/v=/.test(value)) {
+          const params = new URLSearchParams(value.split('?')[1]);
+          id = params.get('v') || value;
+        } else if (/youtu\.be\//.test(value)) {
+          id = value.split('youtu.be/').pop().split(/[?&]/)[0];
+        } else if (/\/embed\//.test(value)) {
+          id = value.split('/embed/').pop().split(/[?&]/)[0];
+        }
+      } catch (e) {
+        // fallback to raw value
+        id = value;
+      }
+
+      content.push({ type: 'video', provider: 'youtube', id });
+      i++;
+      continue;
+    }
     // Paragraph
     if (line.trim()) {
       content.push({ type: 'paragraph', text: line.trim() });
@@ -148,23 +269,44 @@ function parseGalleryImages(lines) {
 
 // Main conversion process
 function convertMarkdownToJson() {
-  const projectsData = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+  const projectsData = loadProjectsData();
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  const convertedSlugs = new Set();
+  const projectIndex = [];
 
   projectsData.forEach(project => {
     const mdFile = path.join(mdDir, `${project.slug}.md`);
+    const projectOutputPath = path.join(dataDir, `${project.slug}.json`);
+    const projectRecord = { ...project };
 
     if (fs.existsSync(mdFile)) {
       const markdown = fs.readFileSync(mdFile, 'utf-8');
-      project.content = parseMarkdown(markdown);
+      projectRecord.content = parseMarkdown(markdown);
       console.log(`✓ Converted: ${project.slug}`);
     } else {
       console.log(`✗ Missing: ${mdFile}`);
     }
+
+    fs.writeFileSync(projectOutputPath, JSON.stringify(projectRecord, null, 2));
+    convertedSlugs.add(project.slug);
+    projectIndex.push(toProjectIndexItem(projectRecord));
   });
 
-  // Write updated projects.json
-  fs.writeFileSync(jsonPath, JSON.stringify(projectsData, null, 2));
-  console.log(`\n✓ Updated projects.json`);
+  const existingOutputFiles = fs
+    .readdirSync(dataDir)
+    .filter((file) => file.endsWith('.json') && file !== 'index.json');
+
+  existingOutputFiles.forEach((file) => {
+    const slug = path.basename(file, '.json');
+    if (!convertedSlugs.has(slug)) {
+      fs.rmSync(path.join(dataDir, file));
+      console.log(`- Removed stale project file: ${file}`);
+    }
+  });
+
+  fs.writeFileSync(indexPath, JSON.stringify(projectIndex, null, 2));
+  console.log(`\n✓ Updated projects index`);
 }
 
 convertMarkdownToJson();

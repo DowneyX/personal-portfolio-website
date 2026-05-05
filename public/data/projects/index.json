@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "factorio-pollution-visuals-mod",
+    "projectType": "Personal project",
+    "year": 2019,
+    "title": "Factorio Pollution Visuals Mod",
+    "briefDescription": "Mod i made for the game Factorio that adds visual indicators to pollution, giving the game more ambiance and making it easier to see where pollution is spreading.",
+    "tags": [
+      "Lua"
+    ]
+  },
+  {
+    "slug": "website-vrx-tech",
+    "projectType": "Professional project",
+    "year": 2024,
+    "title": "Website Vrx Tech",
+    "briefDescription": "A website i made for a company called Vrx Tech, which provides Fiber Optic infrastructure solutions.",
+    "tags": [
+      "Angular",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "slug": "edona-portfolio",
+    "projectType": "Personal project",
+    "year": 2024,
+    "title": "Edona Portfolio",
+    "briefDescription": "The portfolio website for Edona, a talented artist and illustrator.",
+    "tags": [
+      "Angular",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "slug": "hanze-mini-library",
+    "projectType": "Academic project",
+    "year": 2025,
+    "title": "Hanze Mini Library",
+    "briefDescription": "My internship project at the Hanze University of Applied Sciences, where I developed a mini library system.",
+    "tags": [
+      "Angular",
+      "C",
+      "sip2",
+      "RFID",
+      "esp32"
+    ]
+  }
+]

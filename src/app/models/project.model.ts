@@ -5,7 +5,7 @@ export interface ProjectImage {
 }
 
 export interface ProjectContentBlock {
-  type: 'heading' | 'paragraph' | 'image' | 'gallery' | 'code' | 'quote' | 'list';
+  type: 'heading' | 'paragraph' | 'image' | 'gallery' | 'code' | 'quote' | 'list' | 'video';
   title?: string;
   level?: 2 | 3 | 4;
   text?: string;
@@ -17,6 +17,9 @@ export interface ProjectContentBlock {
   fileName?: string;
   code?: string;
   items?: string[];
+  // video
+  provider?: 'youtube';
+  id?: string;
 }
 
 export interface Project {

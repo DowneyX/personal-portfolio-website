@@ -15,20 +15,31 @@
       <article class="mt-8 sm:mt-12 max-w-3xl text-neutral-300 mx-auto">
         <ng-container *ngFor="let block of project.content">
           <ng-container [ngSwitch]="block.type">
-            <h2 *ngSwitchCase="'heading'" [class]="getHeadingClass(block.level)" [innerHTML]="renderMarkdownLinks(block.text)"></h2>
+            <h2 *ngSwitchCase="'heading'" [class]="getHeadingClass(block.level)"
+              [innerHTML]="renderMarkdownLinks(block.text)"></h2>
 
-            <p *ngSwitchCase="'paragraph'" class="text-neutral-300 leading-normal mt-3" [innerHTML]="renderMarkdownLinks(block.text)">
+            <p *ngSwitchCase="'paragraph'" class="text-neutral-300 leading-normal mt-3"
+              [innerHTML]="renderMarkdownLinks(block.text)">
             </p>
 
-            <blockquote *ngSwitchCase="'quote'"
-              class="mt-8 border-l-2 border-neutral-600 pl-4 text-neutral-300 italic " [innerHTML]="renderMarkdownLinks(block.text)">
+            <blockquote *ngSwitchCase="'quote'" class="mt-8 border-l-2 border-neutral-600 pl-4 text-neutral-300 italic "
+              [innerHTML]="renderMarkdownLinks(block.text)">
             </blockquote>
 
             <div *ngSwitchCase="'list'" class="mt-2 mb-6">
-              <h3 *ngIf="block.title" class="text-white font-semibold mb-3" [innerHTML]="renderMarkdownLinks(block.title)"></h3>
+              <h3 *ngIf="block.title" class="text-white font-semibold mb-3"
+                [innerHTML]="renderMarkdownLinks(block.title)"></h3>
               <ul class="list-disc pl-5 space-y-2 text-neutral-300">
                 <li *ngFor="let item of block.items" [innerHTML]="renderMarkdownLinks(item)"></li>
               </ul>
+            </div>
+
+            <div *ngSwitchCase="'video'" class="mt-8">
+              <div class="w-full">
+                <iframe [src]="getSafeUrl(block.id)" class="w-full h-64 sm:h-96" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+              </div>
             </div>
 
             <figure *ngSwitchCase="'image'" class="mt-8">
