@@ -69,5 +69,19 @@
       "esp32",
       "raspberry pi"
     ]
+  },
+  {
+    "slug": "PLC-Sorting-system",
+    "projectType": "Personal project",
+    "year": 2026,
+    "title": "PLC Sorting System",
+    "briefDescription": "Sorting system that used a PLC to sort pallets based on user input for better understanding of PLC programming and automation.",
+    "tags": [
+      "Tia portal",
+      "Tia Portal",
+      "factory IO",
+      "SCL",
+      "PLC SIM advanced"
+    ]
   }
 ]

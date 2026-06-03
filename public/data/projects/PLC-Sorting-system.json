@@ -1,0 +1,137 @@
+{
+  "slug": "PLC-Sorting-system",
+  "projectType": "Personal project",
+  "year": 2026,
+  "title": "PLC Sorting System",
+  "briefDescription": "Sorting system that used a PLC to sort pallets based on user input for better understanding of PLC programming and automation.",
+  "tags": [
+    "Tia portal",
+    "Tia Portal",
+    "factory IO",
+    "SCL",
+    "PLC SIM advanced"
+  ],
+  "content": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Project Context"
+    },
+    {
+      "type": "paragraph",
+      "text": "Due to my interest in industrial automation, I wanted to gain hands-on experience with PLC programming. My background is primarily in software engineering and data visualization, so I decided to build a small project that would help me learn the fundamentals of PLC development and the tooling commonly used in the industry."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Implementation"
+    },
+    {
+      "type": "paragraph",
+      "text": "After doing some research, I discovered that Siemens is one of the most widely used PLC vendors in Europe. As a result, I decided to explore the Siemens ecosystem, including TIA Portal and PLCSIM Advanced. To simulate the physical environment, I used Factory I/O."
+    },
+    {
+      "type": "paragraph",
+      "text": "The setup is relatively simple. A main conveyor supplies pallets and transfers them onto a turntable. Depending on the user's input, the turntable must rotate and unload the pallet either to the left or to the right."
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/PLC-sorting-system/conyeyor_setup.png",
+      "alt": "Conveyor Setup",
+      "caption": "Setup of the hardware"
+    },
+    {
+      "type": "paragraph",
+      "text": "After creating a virtual PLC, I assigned tags to all relevant inputs and outputs."
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/PLC-sorting-system/tag_table.png",
+      "alt": "tag table",
+      "caption": "tag table"
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/PLC-sorting-system/virtual_plc.png",
+      "alt": "tag table",
+      "caption": "vitual plc"
+    },
+    {
+      "type": "paragraph",
+      "text": "Next, I wanted to explore how closely software engineering principles translate to PLC programming. For systems like this, I would typically implement a state machine. In a state-driven architecture, the system transitions between a series of states, with each state being responsible for a specific part of the process."
+    },
+    {
+      "type": "paragraph",
+      "text": "To visualize the design, I created the following state diagram."
+    },
+    {
+      "type": "image",
+      "src": "/images/projects/PLC-sorting-system/state_diagram.png",
+      "alt": "state diagram",
+      "caption": "state diagram for state machine"
+    },
+    {
+      "type": "paragraph",
+      "text": "The states I defined are:"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_LOADING`"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_WAIT_INPUT`"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_TURNING`"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_UNLOAD_LEFT`"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_UNLOAD_RIGHT`"
+    },
+    {
+      "type": "paragraph",
+      "text": "* `STATE_RESET`"
+    },
+    {
+      "type": "paragraph",
+      "text": "Once the state machine was designed, it was time to implement it in TIA Portal. I chose Structured Control Language (SCL) because its syntax felt the most familiar coming from a software engineering background."
+    },
+    {
+      "type": "paragraph",
+      "text": "The final implementation is shown below."
+    },
+    {
+      "type": "code",
+      "language": "SCL",
+      "fileName": "snippet.ts",
+      "code": "Turntable [FB1]\n\n\"Q_ConveyorLeft\" := TRUE;\n\"Q_ConveyorRight\" := TRUE;\n\n#rExitLeft(CLK := \"S_ExitLeft\");\n#fExitLeft(CLK := \"S_ExitLeft\");\n\n#rExitRight(CLK := \"S_ExitRight\");\n#fExitRight(CLK := \"S_ExitRight\");\n\n#rFrontLS(CLK := \"S_EntryFront\");\n#fFrontLS(CLK := \"S_EntryFront\");\n\nCASE #I_State OF\n    #STATE_LOADING:\n        \"Q_ConveyorEntry\" := TRUE;\n        \"Q_TurntableREV\" := TRUE;\n\n        IF #fFrontLS.Q THEN\n            \"Q_ConveyorEntry\" := FALSE;\n        END_IF;\n\n        IF \"LS_TurntableBack\" THEN\n            \"Q_TurntableREV\" := FALSE;\n            #I_State := #STATE_WAIT_INPUT;\n        END_IF;\n\n    #STATE_WAIT_INPUT:\n        IF \"PB_SelectLeft\" THEN\n            #I_Direction := #DIRECTION_LEFT;\n            #I_State := #STATE_TURNING;\n        END_IF;\n\n        IF \"PB_SelectRight\" THEN\n            #I_Direction := #DIRECTION_RIGHT;\n            #I_State := #STATE_TURNING;\n        END_IF;\n\n    #STATE_TURNING:\n        \"Q_TurntableTurn\" := TRUE;\n\n        IF \"LS_UnloadPosition\" AND #I_Direction = #DIRECTION_RIGHT THEN\n            #I_State := #STATE_UNLOAD_RIGHT;\n        END_IF;\n\n        IF \"LS_UnloadPosition\" AND #I_Direction = #DIRECTION_LEFT THEN\n            #I_State := #STATE_UNLOAD_LEFT;\n        END_IF;\n\n    #STATE_UNLOAD_LEFT:\n        \"Q_TurntableREV\" := TRUE;\n\n        IF #fExitLeft.Q THEN\n            #I_State := #STATE_RESET;\n        END_IF;\n\n    #STATE_UNLOAD_RIGHT:\n        \"Q_TurntableFWD\" := TRUE;\n\n        IF #fExitRight.Q THEN\n            #I_State := #STATE_RESET;\n        END_IF;\n\n    #STATE_RESET:\n        \"Q_TurntableFWD\" := FALSE;\n        \"Q_TurntableREV\" := FALSE;\n        \"Q_TurntableTurn\" := FALSE;\n        \"Q_ConveyorEntry\" := FALSE;\n\n        IF \"LS_LoadPosition\" THEN\n            #I_State := #STATE_LOADING;\n        END_IF;\nEND_CASE;"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Closing Thoughts"
+    },
+    {
+      "type": "paragraph",
+      "text": "This project was both enjoyable and educational, providing a practical introduction to PLC programming and the Siemens toolchain. Unfortunately, due to a bug in my virtualization setup, I was unable to fully test the implementation in the simulated environment. In the future i will have to search for alternative methods to simulate my PLC or buy a physical device to test my systems."
+    },
+    {
+      "type": "paragraph",
+      "text": "See [factory I/O BUG](https://www.reddit.com/r/PLC/comments/1t7yp8x/factory_io_not_recognizing_inputs/)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Despite that limitation, the project achieved its main goal: helping me become familiar with PLC development concepts, state-based control logic, and the Siemens ecosystem."
+    },
+    {
+      "type": "paragraph",
+      "text": "In future projects, I would like to explore other PLC programming languages such as Ladder Logic (LAD) and Function Block Diagrams (FBD). I am also interested in implementing fault detection, alarm handling, and recovery mechanisms to make the system more robust. Additionally, I would like to learn more about Human-Machine Interfaces (HMIs) and how they can be integrated into industrial automation systems to improve monitoring and operator interaction. I will probably tackle these subjects in future projects."
+    }
+  ]
+}
